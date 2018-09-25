@@ -57,21 +57,36 @@ public class UploadTimeoutTest {
     TOXIPROXY.reset();
   }
 
-  @Test(timeout=100000)
+  @Test(timeout=180000) // Max 3 minutes
   public void testBrokenUpload() throws IOException {
     Proxy p = findOrCreateProxy("http", TOXIPROXY_HOST + ":21212", UPSTREAM_HOST + ":8080");
+    // Only upload 1 byte of data
     p.toxics().limitData("limitUp", ToxicDirection.UPSTREAM, 1);
+
+    // Don't send close the connection
     p.toxics().slowClose("slowCloseDown", ToxicDirection.DOWNSTREAM, 10 * 1000 * 1000);
 
     HttpRequestInitializer requestInitializer = new RetryHttpRequestInitializer();
     HttpRequestFactory requestFactory = new NetHttpTransport().createRequestFactory(requestInitializer);
 
     InputStream is = getClass().getClassLoader().getResourceAsStream("file.txt");
-    LOG.debug("input stream {}", is);
     HttpContent content = new InputStreamContent("text/plain", is);
     HttpRequest request = requestFactory.buildPostRequest(new GenericUrl("http://" + p.getListen()), content);
 
     LOG.debug("making request");
+    String response = request.execute().parseAsString();
+    assertNotNull(response);
+  }
+
+  @Test
+  public void testUpload() throws IOException {
+    HttpRequestInitializer requestInitializer = new RetryHttpRequestInitializer();
+    HttpRequestFactory requestFactory = new NetHttpTransport().createRequestFactory(requestInitializer);
+
+    InputStream is = getClass().getClassLoader().getResourceAsStream("file.txt");
+    HttpContent content = new InputStreamContent("text/plain", is);
+    HttpRequest request = requestFactory.buildPostRequest(new GenericUrl("http://127.0.0.1:8080"), content);
+
     String response = request.execute().parseAsString();
     assertNotNull(response);
   }

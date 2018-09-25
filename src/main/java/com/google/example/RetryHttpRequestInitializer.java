@@ -271,7 +271,8 @@ public class RetryHttpRequestInitializer implements HttpRequestInitializer {
   public void initialize(HttpRequest request) throws IOException {
     // Set a timeout for hanging-gets.
     // TODO: Do this exclusively for work requests.
-    request.setReadTimeout(HANGING_GET_TIMEOUT_SEC * 1000);
+    // request.setReadTimeout(HANGING_GET_TIMEOUT_SEC * 1000);
+    request.setReadTimeout(1000);
 
     LoggingHttpBackOffHandler loggingHttpBackOffHandler = new LoggingHttpBackOffHandler(
         sleeper,
@@ -279,8 +280,8 @@ public class RetryHttpRequestInitializer implements HttpRequestInitializer {
         // A back-off multiplier of 2 raises the maximum request retrying time
         // to approximately 5 minutes (keeping other back-off parameters to
         // their default values).
-        new ExponentialBackOff.Builder().setNanoClock(nanoClock).setMultiplier(2).setMaxElapsedTimeMillis(100000).build(),
-        new ExponentialBackOff.Builder().setNanoClock(nanoClock).setMultiplier(2).setMaxElapsedTimeMillis(100000).build(),
+        new ExponentialBackOff.Builder().setNanoClock(nanoClock).setMultiplier(2).setMaxElapsedTimeMillis(120000).build(),
+        new ExponentialBackOff.Builder().setNanoClock(nanoClock).setMultiplier(2).setMaxElapsedTimeMillis(120000).build(),
         ignoredResponseCodes
     );
 
