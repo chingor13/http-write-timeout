@@ -1,0 +1,21 @@
+version: '3'
+services:
+  upload:
+    build: ./server
+    ports:
+      - 8080:8080
+
+  toxiproxy:
+    image: shopify/toxiproxy
+    ports:
+      - 8474:8474
+      - 21212:21212
+
+  test:
+    build: .
+    depends_on:
+      - upload
+      - toxiproxy
+    environment:
+      UPSTREAM_HOST: upload
+      PROXY_HOST: toxiproxy
