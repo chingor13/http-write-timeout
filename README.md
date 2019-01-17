@@ -14,7 +14,7 @@ $ dd if=/dev/zero of=src/main/resources/file.txt count=65536 bs=1024
 2. Run toxiproxy:
 
 ```bash
-$ docker run --rm--net=host shopify/toxiproxy
+$ docker run --rm --net=host shopify/toxiproxy
 ```
 
 3. Run the upload server:
